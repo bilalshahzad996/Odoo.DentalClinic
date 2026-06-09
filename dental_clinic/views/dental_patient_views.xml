@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dental_patient_form" model="ir.ui.view">
+        <field name="name">dental.patient.form</field>
+        <field name="model">dental.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_appointments" icon="fa-calendar">
+                            <field name="appointment_count" widget="statinfo" string="Appointments"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_treatments" icon="fa-stethoscope">
+                            <field name="treatment_count" widget="statinfo" string="Treatments"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Patient Name"/></h1>
+                        <field name="patient_ref" readonly="1"/>
+                    </div>
+                    <group>
+                        <group string="Personal Info">
+                            <field name="date_of_birth"/>
+                            <field name="age" readonly="1"/>
+                            <field name="gender"/>
+                            <field name="blood_group"/>
+                        </group>
+                        <group string="Contact">
+                            <field name="phone" widget="phone"/>
+                            <field name="email" widget="email"/>
+                            <field name="street" placeholder="Address"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Emergency Contact">
+                            <field name="emergency_contact"/>
+                            <field name="emergency_phone"/>
+                        </group>
+                        <group string="Medical Info">
+                            <field name="allergies"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Medical History" name="medical">
+                            <group>
+                                <field name="medical_history" nolabel="1" placeholder="Relevant medical history (diabetes, heart conditions, etc.)..."/>
+                            </group>
+                        </page>
+                        <page string="Tooth Chart" name="teeth">
+                            <field name="tooth_ids">
+                                <list editable="bottom">
+                                    <field name="tooth_number"/>
+                                    <field name="condition" widget="badge"
+                                           decoration-success="condition == 'healthy'"
+                                           decoration-danger="condition in ['cavity','needs_rct','needs_extraction','fractured']"
+                                           decoration-info="condition in ['filled','crown','root_canal','implant','bridge']"
+                                           decoration-muted="condition == 'missing'"/>
+                                    <field name="surfaces" widget="many2many_tags"/>
+                                    <field name="notes"/>
+                                    <field name="date_recorded"/>
+                                    <field name="doctor_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Appointments" name="appointments">
+                            <field name="appointment_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="appointment_date"/>
+                                    <field name="doctor_id"/>
+                                    <field name="chief_complaint"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'done'"
+                                           decoration-warning="state == 'confirmed'"
+                                           decoration-danger="state == 'cancelled'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Treatments" name="treatments">
+                            <field name="treatment_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="doctor_id"/>
+                                    <field name="total_amount"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'completed'"
+                                           decoration-info="state == 'invoiced'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="X-Rays" name="xrays">
+                            <field name="xray_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="xray_type"/>
+                                    <field name="doctor_id"/>
+                                    <field name="findings"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Prescriptions" name="prescriptions">
+                            <field name="prescription_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="doctor_id"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dental_patient_list" model="ir.ui.view">
+        <field name="name">dental.patient.list</field>
+        <field name="model">dental.patient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="patient_ref"/>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="appointment_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dental_patient_search" model="ir.ui.view">
+        <field name="name">dental.patient.search</field>
+        <field name="model">dental.patient</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_ref"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="gender"/>
+                <separator/>
+                <filter name="active_patients" string="Active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_dental_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">dental.patient</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_dental_patient_search"/>
+    </record>
+</odoo>

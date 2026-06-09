@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dental_xray_form" model="ir.ui.view">
+        <field name="name">dental.xray.form</field>
+        <field name="model">dental.xray</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="doctor_id"/>
+                            <field name="date"/>
+                            <field name="xray_type"/>
+                        </group>
+                        <group>
+                            <field name="tooth_ids" widget="many2many_tags"/>
+                            <field name="image" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+                    <group string="Findings">
+                        <field name="findings" nolabel="1" placeholder="Radiographic findings..."/>
+                        <field name="notes" placeholder="Notes..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dental_xray_list" model="ir.ui.view">
+        <field name="name">dental.xray.list</field>
+        <field name="model">dental.xray</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="date"/>
+                <field name="xray_type" widget="badge"/>
+                <field name="findings"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_dental_xray" model="ir.actions.act_window">
+        <field name="name">X-Rays</field>
+        <field name="res_model">dental.xray</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

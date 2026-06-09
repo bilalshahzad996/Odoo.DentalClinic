@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dental_prescription_form" model="ir.ui.view">
+        <field name="name">dental.prescription.form</field>
+        <field name="model">dental.prescription</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" type="object" string="Activate" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_expire"   type="object" string="Mark Expired" invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="doctor_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="treatment_id"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="medicine_name"/>
+                            <field name="dosage"/>
+                            <field name="frequency"/>
+                            <field name="duration"/>
+                            <field name="instructions"/>
+                        </list>
+                    </field>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" placeholder="General instructions..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dental_prescription_list" model="ir.ui.view">
+        <field name="name">dental.prescription.list</field>
+        <field name="model">dental.prescription</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-muted="state == 'expired'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_dental_prescription" model="ir.actions.act_window">
+        <field name="name">Prescriptions</field>
+        <field name="res_model">dental.prescription</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

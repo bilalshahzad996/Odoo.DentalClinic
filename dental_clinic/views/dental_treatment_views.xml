@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dental_treatment_form" model="ir.ui.view">
+        <field name="name">dental.treatment.form</field>
+        <field name="model">dental.treatment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_in_progress" type="object" string="Start Treatment" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_complete"    type="object" string="Mark Complete"   class="btn-success" invisible="state != 'in_progress'"/>
+                    <button name="action_create_invoice" type="object" string="Create Invoice" class="btn-primary" invisible="state != 'completed'"/>
+                    <button name="action_view_invoice"   type="object" string="View Invoice"   invisible="not invoice_id"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,completed,invoiced"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="doctor_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="appointment_id"/>
+                            <field name="invoice_id" readonly="1"/>
+                            <field name="total_amount" widget="monetary" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Clinical">
+                        <field name="chief_complaint" placeholder="Chief complaint..."/>
+                        <field name="diagnosis" placeholder="Diagnosis..."/>
+                    </group>
+                    <notebook>
+                        <page string="Procedures" name="procedures">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="service_id"/>
+                                    <field name="tooth_ids" widget="many2many_tags"/>
+                                    <field name="quantity"/>
+                                    <field name="unit_price"/>
+                                    <field name="discount"/>
+                                    <field name="subtotal" readonly="1"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="total_amount" readonly="1" widget="monetary"
+                                       string="Total" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="treatment_notes" placeholder="Treatment notes..."/>
+                                <field name="next_visit_notes" placeholder="Instructions for next visit..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dental_treatment_list" model="ir.ui.view">
+        <field name="name">dental.treatment.list</field>
+        <field name="model">dental.treatment</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'completed'"
+                  decoration-info="state == 'invoiced'">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="date"/>
+                <field name="total_amount" widget="monetary"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-info="state == 'invoiced'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_dental_treatment" model="ir.actions.act_window">
+        <field name="name">Treatments</field>
+        <field name="res_model">dental.treatment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

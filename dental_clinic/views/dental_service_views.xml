@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dental_service_form" model="ir.ui.view">
+        <field name="name">dental.service.form</field>
+        <field name="model">dental.service</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Service Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="category"/>
+                            <field name="price" widget="monetary"/>
+                            <field name="duration_mins"/>
+                        </group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" placeholder="Service description..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dental_service_list" model="ir.ui.view">
+        <field name="name">dental.service.list</field>
+        <field name="model">dental.service</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="category" widget="badge"/>
+                <field name="price" widget="monetary"/>
+                <field name="duration_mins"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_dental_service" model="ir.actions.act_window">
+        <field name="name">Services &amp; Procedures</field>
+        <field name="res_model">dental.service</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

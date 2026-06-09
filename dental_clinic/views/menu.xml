@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_dental_root"
+              name="Dental Clinic"
+              sequence="10"
+              web_icon="dental_clinic,static/description/icon.png"
+              groups="base.group_user"/>
+
+    <menuitem id="menu_dental_patients"      parent="menu_dental_root" name="Patients"      sequence="10" action="action_dental_patient"/>
+    <menuitem id="menu_dental_appointments"  parent="menu_dental_root" name="Appointments"  sequence="20" action="action_dental_appointment"/>
+    <menuitem id="menu_dental_treatments"    parent="menu_dental_root" name="Treatments"    sequence="30" action="action_dental_treatment"/>
+    <menuitem id="menu_dental_prescriptions" parent="menu_dental_root" name="Prescriptions" sequence="40" action="action_dental_prescription"/>
+    <menuitem id="menu_dental_xrays"         parent="menu_dental_root" name="X-Rays"        sequence="50" action="action_dental_xray"/>
+
+    <!-- Inventory -->
+    <menuitem id="menu_dental_inventory_parent" parent="menu_dental_root" name="Inventory"  sequence="60"/>
+    <menuitem id="menu_dental_inventory"     parent="menu_dental_inventory_parent" name="Stock Items" sequence="10" action="action_dental_inventory"/>
+    <menuitem id="menu_dental_usage_log"     parent="menu_dental_inventory_parent" name="Usage Log"   sequence="20" action="action_dental_inventory_usage"/>
+
+    <!-- Staff & HR -->
+    <menuitem id="menu_dental_hr"            parent="menu_dental_root" name="Staff &amp; HR" sequence="70"/>
+    <menuitem id="menu_dental_staff"         parent="menu_dental_hr"   name="Staff"          sequence="10" action="action_dental_staff"/>
+    <menuitem id="menu_dental_attendance"    parent="menu_dental_hr"   name="Attendance"     sequence="20" action="action_dental_attendance"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_dental_config"        parent="menu_dental_root"   name="Configuration"             sequence="90"/>
+    <menuitem id="menu_dental_doctors"       parent="menu_dental_config" name="Doctors"                   sequence="10" action="action_dental_doctor"/>
+    <menuitem id="menu_dental_services"      parent="menu_dental_config" name="Services &amp; Procedures" sequence="20" action="action_dental_service"/>
+</odoo>

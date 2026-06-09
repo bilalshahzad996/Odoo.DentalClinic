@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="dental_appointment_type" model="appointment.type">
+        <field name="name">Dental Appointment</field>
+        <field name="appointment_duration">0.5</field>
+        <field name="schedule_based_on">users</field>
+    </record>
+</odoo>
