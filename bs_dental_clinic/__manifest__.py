@@ -1,5 +1,5 @@
 {
-    'name': 'Dental Clinic',
+    'name': 'Dental Clinic Management',
     'version': '19.0.1.0.0',
     'summary': 'Complete Dental Clinic Management System',
     'description': 'Manage Patients, Appointments, Treatments, Tooth Charts, Prescriptions, X-Rays, Inventory and Invoicing for a dental clinic.',
