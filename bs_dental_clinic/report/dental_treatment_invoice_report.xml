@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Report Action ── -->
+    <record id="action_report_dental_treatment_invoice" model="ir.actions.report">
+        <field name="name">Treatment Invoice</field>
+        <field name="model">dental.treatment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dental_clinic.report_dental_treatment_invoice_document</field>
+        <field name="report_file">dental_clinic.report_dental_treatment_invoice_document</field>
+        <field name="binding_model_id" ref="model_dental_treatment"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- ── QWeb Template ── -->
+    <template id="report_dental_treatment_invoice_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- ══ Title ══ -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h2 style="color:#1a6e9e; border-bottom:2px solid #1a6e9e; padding-bottom:6px; margin-bottom:0;">
+                                    TREATMENT INVOICE
+                                </h2>
+                            </div>
+                        </div>
+
+                        <!-- ══ Invoice Meta + Patient Info ══ -->
+                        <div class="row mb-4">
+                            <!-- Patient (Bill To) -->
+                            <div class="col-6">
+                                <p style="font-size:11px; color:#888; margin-bottom:4px; text-transform:uppercase; letter-spacing:.5px;">Bill To</p>
+                                <table class="table table-sm table-borderless" style="font-size:13px; margin-bottom:0;">
+                                    <tr>
+                                        <td style="padding:2px 8px 2px 0; font-weight:600;">
+                                            <t t-esc="o.patient_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.phone">
+                                        <td style="padding:2px 8px 2px 0; color:#555;">
+                                            <t t-esc="o.patient_id.phone"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.email">
+                                        <td style="padding:2px 8px 2px 0; color:#555;">
+                                            <t t-esc="o.patient_id.email"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.date_of_birth">
+                                        <td style="padding:2px 8px 2px 0; color:#555;">
+                                            DOB: <t t-esc="o.patient_id.date_of_birth"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Invoice details -->
+                            <div class="col-6 text-end">
+                                <table class="table table-sm table-borderless" style="font-size:13px; margin-left:auto; width:auto;">
+                                    <tr>
+                                        <td style="padding:2px 12px 2px 0; color:#888;">Invoice Ref</td>
+                                        <td style="padding:2px 0; font-weight:600;"><t t-esc="o.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:2px 12px 2px 0; color:#888;">Date</td>
+                                        <td style="padding:2px 0;"><t t-esc="o.date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:2px 12px 2px 0; color:#888;">Doctor</td>
+                                        <td style="padding:2px 0;"><t t-esc="o.doctor_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="o.invoice_id">
+                                        <td style="padding:2px 12px 2px 0; color:#888;">Invoice #</td>
+                                        <td style="padding:2px 0;"><t t-esc="o.invoice_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="o.sale_order_id">
+                                        <td style="padding:2px 12px 2px 0; color:#888;">Order #</td>
+                                        <td style="padding:2px 0;"><t t-esc="o.sale_order_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:6px 12px 2px 0; color:#888;">Status</td>
+                                        <td style="padding:6px 0;">
+                                            <span t-attf-style="
+                                                display:inline-block;
+                                                padding:2px 10px;
+                                                border-radius:12px;
+                                                font-size:11px;
+                                                font-weight:600;
+                                                background-color:#{
+                                                    'draft'       == o.state and '#e9ecef' or
+                                                    'sale_order'  == o.state and '#fff3cd' or
+                                                    'invoiced'    == o.state and '#cfe2ff' or
+                                                    'in_progress' == o.state and '#d1ecf1' or
+                                                    '#d4edda'};
+                                                color:#{
+                                                    'draft'       == o.state and '#6c757d' or
+                                                    'sale_order'  == o.state and '#856404' or
+                                                    'invoiced'    == o.state and '#084298' or
+                                                    'in_progress' == o.state and '#0c5460' or
+                                                    '#155724'};">
+                                                <t t-esc="dict([
+                                                    ('draft','Draft'),
+                                                    ('sale_order','Sale Order'),
+                                                    ('invoiced','Invoiced'),
+                                                    ('in_progress','In Progress'),
+                                                    ('completed','Completed'),
+                                                ]).get(o.state, o.state)"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ══ Clinical Info (optional) ══ -->
+                        <div class="row mb-3" t-if="o.chief_complaint or o.diagnosis">
+                            <div class="col-12" style="background:#f8f9fa; border-left:3px solid #1a6e9e; padding:8px 12px; border-radius:0 4px 4px 0;">
+                                <t t-if="o.chief_complaint">
+                                    <span style="font-size:12px; color:#888;">Chief Complaint: </span>
+                                    <span style="font-size:12px;"><t t-esc="o.chief_complaint"/></span>
+                                    <t t-if="o.diagnosis"><br/></t>
+                                </t>
+                                <t t-if="o.diagnosis">
+                                    <span style="font-size:12px; color:#888;">Diagnosis: </span>
+                                    <span style="font-size:12px;"><t t-esc="o.diagnosis"/></span>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- ══ Procedures Table ══ -->
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <table class="table table-bordered table-sm" style="font-size:12.5px;">
+                                    <thead style="background-color:#1a6e9e; color:white;">
+                                        <tr>
+                                            <th style="width:30px;">#</th>
+                                            <th>Description</th>
+                                            <th style="width:80px;" class="text-end">Teeth</th>
+                                            <th style="width:50px;" class="text-end">Qty</th>
+                                            <th style="width:90px;" class="text-end">Unit Price</th>
+                                            <th style="width:60px;" class="text-end">Disc%</th>
+                                            <th style="width:80px;" class="text-end">Taxes</th>
+                                            <th style="width:90px;" class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.line_ids" t-as="line">
+                                            <tr>
+                                                <td><t t-esc="line_index + 1"/></td>
+                                                <td>
+                                                    <strong><t t-esc="line.service_id.name"/></strong>
+                                                    <t t-if="line.notes">
+                                                        <br/><small style="color:#888;"><t t-esc="line.notes"/></small>
+                                                    </t>
+                                                </td>
+                                                <td class="text-end" style="font-size:11px; color:#555;">
+                                                    <t t-esc="line.tooth_numbers or '-'"/>
+                                                </td>
+                                                <td class="text-end"><t t-esc="line.quantity"/></td>
+                                                <td class="text-end">
+                                                    <t t-esc="'%.2f' % line.unit_price"/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-if="line.discount">
+                                                        <t t-esc="'%.0f' % line.discount"/>%
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td class="text-end" style="font-size:11px; color:#555;">
+                                                    <t t-if="line.tax_ids">
+                                                        <t t-foreach="line.tax_ids" t-as="tax">
+                                                            <t t-esc="tax.name"/><br/>
+                                                        </t>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-esc="'%.2f' % line.subtotal"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="not o.line_ids">
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted" style="padding:16px;">
+                                                    No procedures recorded.
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ══ Totals ══ -->
+                        <div class="row">
+                            <div class="col-6 offset-6">
+                                <table class="table table-sm table-borderless" style="font-size:13px;">
+                                    <tr>
+                                        <td class="text-end" style="color:#555;">Subtotal</td>
+                                        <td class="text-end" style="width:110px;">
+                                            <t t-esc="'%.2f' % o.amount_untaxed"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.amount_tax">
+                                        <td class="text-end" style="color:#555;">Taxes</td>
+                                        <td class="text-end">
+                                            <t t-esc="'%.2f' % o.amount_tax"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top:2px solid #1a6e9e; font-size:15px;">
+                                        <td class="text-end"><strong>Total</strong></td>
+                                        <td class="text-end"><strong><t t-esc="'%.2f' % o.total_amount"/></strong></td>
+                                    </tr>
+                                    <!-- Payment status from linked invoice -->
+                                    <t t-if="o.invoice_id">
+                                        <tr>
+                                            <td class="text-end" style="color:#555;">Amount Due</td>
+                                            <td class="text-end">
+                                                <t t-esc="'%.2f' % o.invoice_id.amount_residual"/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.invoice_id.payment_state == 'paid'">
+                                            <td colspan="2" class="text-end">
+                                                <span style="color:#28a745; font-weight:700; font-size:14px;">✓ PAID</span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ══ Payment Info from Invoice ══ -->
+                        <t t-if="o.invoice_id and o.invoice_id.invoice_payments_widget">
+                            <div class="row mt-2 mb-3">
+                                <div class="col-12" style="font-size:12px; background:#f8f9fa; padding:8px 12px; border-radius:4px;">
+                                    <strong>Payment Reference:</strong>
+                                    <t t-esc="o.invoice_id.name"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- ══ Notes ══ -->
+                        <t t-if="o.treatment_notes or o.next_visit_notes">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <t t-if="o.treatment_notes">
+                                        <p style="font-size:12px; margin-bottom:4px;">
+                                            <strong>Treatment Notes:</strong>
+                                            <t t-esc="o.treatment_notes"/>
+                                        </p>
+                                    </t>
+                                    <t t-if="o.next_visit_notes">
+                                        <p style="font-size:12px; margin-bottom:4px;">
+                                            <strong>Next Visit Instructions:</strong>
+                                            <t t-esc="o.next_visit_notes"/>
+                                        </p>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- ══ Doctor Signature ══ -->
+                        <div class="row mt-5">
+                            <div class="col-5">
+                                <div style="border-top:1px solid #333; padding-top:6px; font-size:12px; text-align:center;">
+                                    <strong>Patient Signature</strong>
+                                </div>
+                            </div>
+                            <div class="col-5 offset-2 text-center">
+                                <div style="border-top:1px solid #333; padding-top:6px; font-size:12px;">
+                                    <strong><t t-esc="o.doctor_id.name"/></strong><br/>
+                                    <t t-if="o.doctor_id.specialization">
+                                        <t t-esc="dict(o.doctor_id._fields['specialization'].selection).get(o.doctor_id.specialization, '')"/>
+                                        <br/>
+                                    </t>
+                                    <t t-if="o.doctor_id.license_number">
+                                        PMDC Reg # <t t-esc="o.doctor_id.license_number"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ Footer ══ -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-center" style="font-size:10px; color:#aaa; border-top:1px solid #eee; padding-top:6px;">
+                                Thank you for choosing our dental clinic. Please retain this invoice for your records.
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

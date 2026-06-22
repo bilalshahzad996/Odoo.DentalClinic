@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Report Action ── -->
+    <record id="action_report_dental_prescription" model="ir.actions.report">
+        <field name="name">Prescription</field>
+        <field name="model">dental.prescription</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dental_clinic.report_dental_prescription_document</field>
+        <field name="report_file">dental_clinic.report_dental_prescription_document</field>
+        <field name="binding_model_id" ref="model_dental_prescription"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- ── QWeb Template ── -->
+    <template id="report_dental_prescription_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- Header -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 style="color:#1a6e9e; border-bottom:2px solid #1a6e9e; padding-bottom:6px;">
+                                    DENTAL PRESCRIPTION
+                                </h2>
+                            </div>
+                        </div>
+
+                        <!-- Patient + Doctor Info -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <table class="table table-sm table-borderless" style="font-size:13px;">
+                                    <tr>
+                                        <td style="width:120px;"><strong>Patient</strong></td>
+                                        <td>: <t t-esc="o.patient_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.phone">
+                                        <td><strong>Phone</strong></td>
+                                        <td>: <t t-esc="o.patient_id.phone"/></td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.date_of_birth">
+                                        <td><strong>Date of Birth</strong></td>
+                                        <td>: <t t-esc="o.patient_id.date_of_birth"/></td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.gender">
+                                        <td><strong>Gender</strong></td>
+                                        <td>: <t t-esc="o.patient_id.gender.capitalize()"/></td>
+                                    </tr>
+                                    <tr t-if="o.patient_id.allergies">
+                                        <td><strong>Allergies</strong></td>
+                                        <td style="color:red;">: <t t-esc="o.patient_id.allergies"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6 text-end">
+                                <table class="table table-sm table-borderless" style="font-size:13px;">
+                                    <tr>
+                                        <td><strong>Ref #</strong></td>
+                                        <td>: <t t-esc="o.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Date</strong></td>
+                                        <td>: <t t-esc="o.date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Doctor</strong></td>
+                                        <td>: <t t-esc="o.doctor_id.name"/></td>
+                                    </tr>
+                                    <tr t-if="o.doctor_id.specialization">
+                                        <td><strong>Specialization</strong></td>
+                                        <td>: <t t-esc="dict(o.doctor_id._fields['specialization'].selection).get(o.doctor_id.specialization, '')"/></td>
+                                    </tr>
+                                    <tr t-if="o.doctor_id.license_number">
+                                        <td><strong>PMDC Reg #</strong></td>
+                                        <td>: <t t-esc="o.doctor_id.license_number"/></td>
+                                    </tr>
+                                    <tr t-if="o.treatment_id">
+                                        <td><strong>Treatment</strong></td>
+                                        <td>: <t t-esc="o.treatment_id.name"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Rx Symbol + Medicines Table -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h4 style="color:#1a6e9e;">&#x211E; Medicines</h4>
+                                <table class="table table-bordered table-sm" style="font-size:13px;">
+                                    <thead style="background-color:#1a6e9e; color:white;">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Medicine</th>
+                                            <th>Dosage</th>
+                                            <th>Frequency</th>
+                                            <th>Duration</th>
+                                            <th>Special Instructions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.line_ids" t-as="line">
+                                            <tr>
+                                                <td><t t-esc="line_index + 1"/></td>
+                                                <td><strong><t t-esc="line.medicine_name"/></strong></td>
+                                                <td><t t-esc="line.dosage or '-'"/></td>
+                                                <td><t t-esc="line.frequency or '-'"/></td>
+                                                <td><t t-esc="line.duration or '-'"/></td>
+                                                <td><t t-esc="line.instructions or ''"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- General Notes -->
+                        <div class="row mb-4" t-if="o.notes">
+                            <div class="col-12">
+                                <strong>General Instructions:</strong>
+                                <p style="font-size:13px; margin-top:4px;"><t t-esc="o.notes"/></p>
+                            </div>
+                        </div>
+
+                        <!-- Signature -->
+                        <div class="row mt-5">
+                            <div class="col-6 offset-6 text-center">
+                                <div style="border-top:1px solid #333; padding-top:6px; font-size:13px;">
+                                    <strong><t t-esc="o.doctor_id.name"/></strong><br/>
+                                    <t t-if="o.doctor_id.degree">
+                                        <t t-esc="o.doctor_id.degree"/><br/>
+                                    </t>
+                                    <t t-if="o.doctor_id.license_number">
+                                        PMDC Reg # <t t-esc="o.doctor_id.license_number"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer note -->
+                        <div class="row mt-3">
+                            <div class="col-12 text-center" style="font-size:11px; color:#888; border-top:1px solid #ddd; padding-top:6px;">
+                                This prescription is valid for 30 days from the date of issue.
+                                Please follow the dosage instructions carefully.
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

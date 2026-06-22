@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dental_treatment_form" model="ir.ui.view">
+        <field name="name">dental.treatment.form</field>
+        <field name="model">dental.treatment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- Step 1: Create Sale Order (from Draft) -->
+                    <button name="action_create_sale_order" type="object"
+                            string="Create Sale Order" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <!-- Step 2: Create Invoice (from Sale Order) -->
+                    <button name="action_create_invoice" type="object"
+                            string="Create Invoice" class="btn-primary"
+                            invisible="state != 'sale_order'"/>
+                    <!-- Step 3: Start Treatment (after patient pays / invoice created) -->
+                    <button name="action_in_progress" type="object"
+                            string="Start Treatment" class="btn-success"
+                            invisible="state != 'invoiced'"/>
+                    <!-- Step 4: Mark Complete -->
+                    <button name="action_complete" type="object"
+                            string="Mark Complete" class="btn-success"
+                            invisible="state != 'in_progress'"/>
+                    <!-- Print Invoice (always visible once procedures exist) -->
+                    <button name="action_print_treatment_invoice" type="object"
+                            string="Print Invoice" class="btn-secondary"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,sale_order,invoiced,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_sale_order" icon="fa-shopping-cart"
+                                invisible="not sale_order_id">
+                            <field name="sale_order_count" widget="statinfo" string="Sale Order"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_invoice" icon="fa-pencil-square-o"
+                                invisible="not invoice_id">
+                            <field name="invoice_count" widget="statinfo" string="Invoice"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="doctor_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="appointment_id"/>
+                            <field name="sale_order_id" readonly="1"/>
+                            <field name="invoice_id"    readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Clinical">
+                        <field name="chief_complaint" placeholder="Chief complaint..."/>
+                        <field name="diagnosis"       placeholder="Diagnosis..."/>
+                    </group>
+                    <notebook>
+                        <page string="Procedures" name="procedures">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="service_id"/>
+                                    <field name="tooth_ids" widget="many2many_tags" optional="show"/>
+                                    <field name="quantity"/>
+                                    <field name="unit_price"/>
+                                    <field name="discount"/>
+                                    <field name="tax_ids" widget="many2many_tags" optional="show"/>
+                                    <field name="subtotal"   readonly="1"/>
+                                    <field name="tax_amount" readonly="1" optional="show"/>
+                                    <field name="notes"      optional="show"/>
+                                </list>
+                            </field>
+                            <!-- Totals footer like native Odoo -->
+                            <div class="o_subtotal" style="margin-top:8px;">
+                                <table class="table table-sm" style="width:300px;margin-left:auto;">
+                                    <tr>
+                                        <td class="text-end"><strong>Subtotal</strong></td>
+                                        <td class="text-end">
+                                            <field name="amount_untaxed" widget="monetary" readonly="1" nolabel="1"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-end"><strong>Taxes</strong></td>
+                                        <td class="text-end">
+                                            <field name="amount_tax" widget="monetary" readonly="1" nolabel="1"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top:2px solid #dee2e6;">
+                                        <td class="text-end"><strong>Total</strong></td>
+                                        <td class="text-end">
+                                            <field name="total_amount" widget="monetary" readonly="1" nolabel="1"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="treatment_notes"  placeholder="Treatment notes..."/>
+                                <field name="next_visit_notes" placeholder="Instructions for next visit..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dental_treatment_list" model="ir.ui.view">
+        <field name="name">dental.treatment.list</field>
+        <field name="model">dental.treatment</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'completed'"
+                  decoration-info="state == 'invoiced'">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="date"/>
+                <field name="amount_untaxed" widget="monetary" string="Subtotal" optional="show"/>
+                <field name="amount_tax"     widget="monetary" string="Tax"      optional="show"/>
+                <field name="total_amount"   widget="monetary" string="Total"/>
+                <field name="sale_order_id"  optional="show"/>
+                <field name="invoice_id"     optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state   == 'draft'"
+                       decoration-warning="state == 'sale_order'"
+                       decoration-info="state    == 'invoiced'"
+                       decoration-primary="state == 'in_progress'"
+                       decoration-success="state == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_dental_treatment" model="ir.actions.act_window">
+        <field name="name">Treatments</field>
+        <field name="res_model">dental.treatment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
