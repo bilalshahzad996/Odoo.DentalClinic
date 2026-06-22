@@ -3,8 +3,10 @@
     'version': '19.0.1.0.0',
     'summary': 'Complete Dental Clinic Management System',
     'description': 'Manage Patients, Appointments, Treatments, Tooth Charts, Prescriptions, X-Rays, Inventory and Invoicing for a dental clinic.',
-    'author': 'Bilal Shahzad',
+    'author': 'DevFlow',
     'category': 'Healthcare',
+    'price': '49.99',
+    'currency': 'USD',
     'depends': ['base', 'mail', 'account', 'appointment', 'product', 'hr', 'hr_attendance', 'stock', 'uom'],
     'data': [
         'security/ir.model.access.csv',
