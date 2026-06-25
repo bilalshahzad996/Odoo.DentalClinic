@@ -30,7 +30,7 @@
         'views/dental_inventory_views.xml',
         'views/menu.xml',
     ],
-    'images': ['static/description/icon.png'],
+    'images': ['static/description/icon1.png'],
     'images': ['static/description/banner.png'],
     'installable': True,
     'application': True,
